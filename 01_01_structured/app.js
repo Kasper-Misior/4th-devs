@@ -4,24 +4,9 @@ import {
   RESPONSES_API_ENDPOINT,
   resolveModelForProvider
 } from "../config.js";
+import { extractResponseText } from "./helpers.js";
 
 const MODEL = resolveModelForProvider("gpt-5.4");
-
-const extractResponseText = (data) => {
-  if (typeof data?.output_text === "string" && data.output_text.trim()) {
-    return data.output_text;
-  }
-
-  const messages = Array.isArray(data?.output)
-    ? data.output.filter((item) => item?.type === "message")
-    : [];
-
-  const textPart = messages
-    .flatMap((message) => (Array.isArray(message?.content) ? message.content : []))
-    .find((part) => part?.type === "output_text" && typeof part?.text === "string");
-
-  return textPart?.text ?? "";
-};
 
 async function extractPerson(text) {
   const response = await fetch(RESPONSES_API_ENDPOINT, {
